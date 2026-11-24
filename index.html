@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ระบบจัดการหมู่บ้านศรีไทย</title>
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0f172a; }
+  #loading {
+    position: fixed; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 16px;
+    font-family: -apple-system, "Segoe UI", "Noto Sans Thai", sans-serif;
+    color: #e2e8f0; background: #0f172a; z-index: 2;
+  }
+  .spinner {
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 4px solid #334155; border-top-color: #60a5fa;
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #fallback { display: none; }
+  #fallback a {
+    color: #60a5fa; text-decoration: none; font-weight: 600;
+  }
+  iframe {
+    position: fixed; inset: 0; width: 100%; height: 100%;
+    border: 0; z-index: 1; background: #fff;
+  }
+</style>
+</head>
+<body>
+  <div id="loading">
+    <div class="spinner"></div>
+    <div>กำลังโหลดระบบจัดการหมู่บ้านศรีไทย...</div>
+    <div id="fallback">
+      โหลดไม่สำเร็จ?
+      <a id="open-link" href="#" target="_blank" rel="noopener">เปิดในแท็บใหม่</a>
+    </div>
+  </div>
+  <iframe id="app-frame" title="ระบบจัดการหมู่บ้านศรีไทย" referrerpolicy="no-referrer"></iframe>
+
+  <script>
+    var APP_URL = "https://script.google.com/macros/s/AKfycbysRkLswIkdqEV4-ANQC7VT3sWKul8bMxdMUnqwjzRqMYBFRoluRWRT0ICW4SPyj7lYkg/exec";
+
+    var frame = document.getElementById("app-frame");
+    var loading = document.getElementById("loading");
+    var fallback = document.getElementById("fallback");
+    document.getElementById("open-link").href = APP_URL;
+
+    frame.addEventListener("load", function () {
+      loading.style.display = "none";
+    });
+
+    frame.src = APP_URL;
+
+    setTimeout(function () {
+      fallback.style.display = "block";
+    }, 6000);
+  </script>
+</body>
+</html>
