@@ -41,21 +41,43 @@
 
   <script>
     var APP_URL = "https://script.google.com/macros/s/AKfycbysRkLswIkdqEV4-ANQC7VT3sWKul8bMxdMUnqwjzRqMYBFRoluRWRT0ICW4SPyj7lYkg/exec";
+    var APP_ORIGIN_PREFIX = "https://script.google.com/macros/s/";
 
     var frame = document.getElementById("app-frame");
     var loading = document.getElementById("loading");
     var fallback = document.getElementById("fallback");
     document.getElementById("open-link").href = APP_URL;
+    var fallbackTimer;
+
+    function showLoading() {
+      fallback.style.display = "none";
+      loading.style.display = "flex";
+      clearTimeout(fallbackTimer);
+      fallbackTimer = setTimeout(function () {
+        fallback.style.display = "block";
+      }, 6000);
+    }
 
     frame.addEventListener("load", function () {
       loading.style.display = "none";
+      clearTimeout(fallbackTimer);
     });
 
-    frame.src = APP_URL;
+    // The app's own nav links use target="_top" (needed when Google embeds
+    // it in its own sandbox iframe). Followed normally, that would navigate
+    // this whole wrapper tab away to the bare .../exec URL. The app instead
+    // posts the intended link to us (see Nav.html); we just swap the iframe
+    // src, so the wrapper chrome/URL stays put while the page changes.
+    window.addEventListener("message", function (event) {
+      var data = event.data;
+      if (!data || data.type !== "stv-navigate" || typeof data.href !== "string") return;
+      if (data.href.indexOf(APP_ORIGIN_PREFIX) !== 0) return;
+      showLoading();
+      frame.src = data.href;
+    });
 
-    setTimeout(function () {
-      fallback.style.display = "block";
-    }, 6000);
+    showLoading();
+    frame.src = APP_URL;
   </script>
 </body>
 </html>
